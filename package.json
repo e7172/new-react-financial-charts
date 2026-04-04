@@ -1,0 +1,47 @@
+{
+  "name": "react-financial-charts-next-workspace",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "workspaces": [
+    "packages/charts"
+  ],
+  "scripts": {
+    "build": "npm run build:package",
+    "build:package": "npm run -w react-financial-charts-next build",
+    "clean": "rimraf packages/charts/dist",
+    "lint": "eslint \"packages/**/*.{ts,tsx}\"",
+    "lint:fix": "eslint \"packages/**/*.{ts,tsx}\" --fix",
+    "pack:dry-run": "npm_config_cache=.npm-cache npm pack --dry-run --workspace react-financial-charts-next",
+    "audit:prod": "npm_config_cache=.npm-cache npm audit --omit=dev",
+    "release:check": "npm run build && npm run lint && npm run pack:dry-run && npm run audit:prod",
+    "test": "echo \"No automated test suite is configured for this fork yet.\""
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.4",
+    "@types/d3-array": "^3.2.2",
+    "@types/d3-force": "^3.0.10",
+    "@types/d3-format": "^3.0.4",
+    "@types/d3-interpolate": "^3.0.4",
+    "@types/d3-path": "^3.1.1",
+    "@types/d3-scale": "^4.0.9",
+    "@types/d3-selection": "^3.0.11",
+    "@types/d3-shape": "^3.1.8",
+    "@types/d3-time-format": "^4.0.3",
+    "@types/lodash.flattendeep": "^4.4.9",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@typescript-eslint/eslint-plugin": "^8.58.0",
+    "@typescript-eslint/parser": "^8.58.0",
+    "eslint": "^9.39.4",
+    "eslint-plugin-react": "^7.37.5",
+    "globals": "^17.4.0",
+    "prettier": "^3.8.1",
+    "rimraf": "^6.1.3",
+    "tsup": "^8.5.1",
+    "typescript": "^6.0.2"
+  }
+}

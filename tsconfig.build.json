@@ -1,0 +1,37 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "jsx": "react",
+    "strict": true,
+    "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "ignoreDeprecations": "6.0",
+    "baseUrl": ".",
+    "paths": {
+      "@react-financial-charts/annotations": ["packages/annotations/src/index.ts"],
+      "@react-financial-charts/annotations/*": ["packages/annotations/src/*"],
+      "@react-financial-charts/axes": ["packages/axes/src/index.ts"],
+      "@react-financial-charts/axes/*": ["packages/axes/src/*"],
+      "@react-financial-charts/coordinates": ["packages/coordinates/src/index.ts"],
+      "@react-financial-charts/coordinates/*": ["packages/coordinates/src/*"],
+      "@react-financial-charts/core": ["packages/core/src/index.ts"],
+      "@react-financial-charts/core/*": ["packages/core/src/*"],
+      "@react-financial-charts/indicators": ["packages/indicators/src/index.ts"],
+      "@react-financial-charts/indicators/*": ["packages/indicators/src/*"],
+      "@react-financial-charts/interactive": ["packages/interactive/src/index.ts"],
+      "@react-financial-charts/interactive/*": ["packages/interactive/src/*"],
+      "@react-financial-charts/scales": ["packages/scales/src/index.ts"],
+      "@react-financial-charts/scales/*": ["packages/scales/src/*"],
+      "@react-financial-charts/series": ["packages/series/src/index.ts"],
+      "@react-financial-charts/series/*": ["packages/series/src/*"],
+      "@react-financial-charts/tooltip": ["packages/tooltip/src/index.ts"],
+      "@react-financial-charts/tooltip/*": ["packages/tooltip/src/*"],
+      "@react-financial-charts/utils": ["packages/utils/src/index.ts"],
+      "@react-financial-charts/utils/*": ["packages/utils/src/*"]
+    }
+  },
+  "include": ["packages/**/*.ts", "packages/**/*.tsx"]
+}

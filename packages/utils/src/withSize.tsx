@@ -1,0 +1,32 @@
+import * as React from "react";
+import { AutoSizer, AutoSizerProps } from "react-virtualized-auto-sizer";
+
+export interface WithSizeProps {
+    readonly width: number;
+    readonly height: number;
+}
+
+export const withSize = (
+    props?: Omit<AutoSizerProps, "Child" | "ChildComponent" | "renderProp">,
+) => {
+    return <TProps extends WithSizeProps>(OriginalComponent: React.ComponentClass<TProps>) => {
+        return class WithSize extends React.Component<Omit<TProps, "width" | "height">> {
+            public render() {
+                return (
+                    <AutoSizer
+                        {...props}
+                        renderProp={({ height, width }) => {
+                            return (
+                                <OriginalComponent
+                                    {...(this.props as TProps)}
+                                    height={height ?? 0}
+                                    width={width ?? 0}
+                                />
+                            );
+                        }}
+                    />
+                );
+            }
+        };
+    };
+};
