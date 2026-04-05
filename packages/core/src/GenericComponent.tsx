@@ -70,6 +70,7 @@ export class GenericComponent extends React.Component<GenericComponentProps, Gen
     private dragInProgress = false;
     private evaluationInProgress = false;
     private iSetTheCursorClass = false;
+    private isSubscribed = false;
     private readonly subscriberId: number;
 
     public constructor(props: GenericComponentProps, context: any) {
@@ -310,7 +311,11 @@ export class GenericComponent extends React.Component<GenericComponentProps, Gen
         }
     }
 
-    public UNSAFE_componentWillMount() {
+    private subscribeToChartCanvas() {
+        if (this.isSubscribed) {
+            return;
+        }
+
         const { subscribe, chartId } = this.context;
         const { clip, edgeClip } = this.props;
 
@@ -322,13 +327,39 @@ export class GenericComponent extends React.Component<GenericComponentProps, Gen
             draw: this.draw,
             getPanConditions: this.getPanConditions,
         });
+        this.isSubscribed = true;
+    }
 
-        this.UNSAFE_componentWillReceiveProps(this.props, this.context);
+    private unsubscribeFromChartCanvas() {
+        if (!this.isSubscribed) {
+            return;
+        }
+
+        const { unsubscribe } = this.context;
+        unsubscribe(this.subscriberId);
+        this.isSubscribed = false;
+    }
+
+    private syncMutableMorePropsFromContext(nextContext: any = this.context) {
+        const { xScale, plotData, chartConfig, getMutableState } = nextContext;
+
+        this.moreProps = {
+            ...this.moreProps,
+            ...(typeof getMutableState === "function" ? getMutableState() : {}),
+            /*
+			^ this is so
+			mouseXY, currentCharts, currentItem are available to
+			newly created components like MouseHoverText which
+			is created right after a new interactive object is drawn
+			*/
+            xScale,
+            plotData,
+            chartConfig,
+        };
     }
 
     public componentWillUnmount() {
-        const { unsubscribe } = this.context;
-        unsubscribe(this.subscriberId);
+        this.unsubscribeFromChartCanvas();
         if (this.iSetTheCursorClass) {
             const { setCursorClass } = this.context;
             setCursorClass(null);
@@ -336,10 +367,22 @@ export class GenericComponent extends React.Component<GenericComponentProps, Gen
     }
 
     public componentDidMount() {
-        this.componentDidUpdate(this.props);
+        this.subscribeToChartCanvas();
+        this.syncMutableMorePropsFromContext();
+
+        if (this.props.canvasDraw !== undefined) {
+            this.drawOnCanvas();
+        }
     }
 
     public componentDidUpdate(prevProps: GenericComponentProps) {
+        this.syncMutableMorePropsFromContext();
+
+        if (prevProps.clip !== this.props.clip || prevProps.edgeClip !== this.props.edgeClip) {
+            this.unsubscribeFromChartCanvas();
+            this.subscribeToChartCanvas();
+        }
+
         const { canvasDraw, selected, interactiveCursorClass } = this.props;
 
         if (prevProps.selected !== selected) {
@@ -356,24 +399,6 @@ export class GenericComponent extends React.Component<GenericComponentProps, Gen
             this.updateMoreProps(this.moreProps);
             this.drawOnCanvas();
         }
-    }
-
-    public UNSAFE_componentWillReceiveProps(nextProps: GenericComponentProps, nextContext: any) {
-        const { xScale, plotData, chartConfig, getMutableState } = nextContext;
-
-        this.moreProps = {
-            ...this.moreProps,
-            ...getMutableState(),
-            /*
-			^ this is so
-			mouseXY, currentCharts, currentItem are available to
-			newly created components like MouseHoverText which
-			is created right after a new interactive object is drawn
-			*/
-            xScale,
-            plotData,
-            chartConfig,
-        };
     }
 
     public getMoreProps() {
