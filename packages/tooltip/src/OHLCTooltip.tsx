@@ -71,10 +71,19 @@ export class OHLCTooltip extends React.Component<OHLCTooltipProps> {
             textFill,
         } = this.props;
 
-        const {
-            chartConfig: { width, height },
-            fullData,
-        } = moreProps;
+        const chartConfig = moreProps?.chartConfig;
+        const fullData = Array.isArray(moreProps?.fullData) ? moreProps.fullData : [];
+
+        if (chartConfig === undefined || chartConfig === null || typeof chartConfig !== "object") {
+            return null;
+        }
+
+        const width = Number((chartConfig as { width?: number }).width);
+        const height = Number((chartConfig as { height?: number }).height);
+
+        if (!Number.isFinite(width) || !Number.isFinite(height)) {
+            return null;
+        }
 
         const currentItem = displayValuesFor(this.props, moreProps) ?? last(fullData);
 
@@ -91,9 +100,9 @@ export class OHLCTooltip extends React.Component<OHLCTooltipProps> {
                 high = ohlcFormat(item.high);
                 low = ohlcFormat(item.low);
                 close = ohlcFormat(item.close);
-                change = `${changeFormat(item.close - item.open)} (${percentFormat(
-                    (item.close - item.open) / item.open,
-                )})`;
+                const delta = item.close - item.open;
+                const percentDelta = item.open !== 0 ? delta / item.open : 0;
+                change = `${changeFormat(delta)} (${percentFormat(percentDelta)})`;
             }
         }
 

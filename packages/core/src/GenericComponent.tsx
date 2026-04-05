@@ -94,6 +94,8 @@ export class GenericComponent extends React.Component<GenericComponentProps, Gen
         this.state = {
             updateCount: 0,
         };
+
+        this.syncMutableMorePropsFromContext(context);
     }
 
     public updateMoreProps(moreProps: any) {
@@ -406,6 +408,31 @@ export class GenericComponent extends React.Component<GenericComponentProps, Gen
             this.context;
 
         const { chartId, fullData } = this.context;
+        let chartConfig = this.moreProps.chartConfig;
+
+        if (chartConfig === undefined) {
+            if (Array.isArray(chartConfigs)) {
+                chartConfig =
+                    (chartId !== undefined ? chartConfigs.find((config: any) => config?.id === chartId) : undefined) ??
+                    chartConfigs[0];
+            } else if (chartConfigs !== undefined) {
+                chartConfig = chartConfigs;
+            }
+        }
+
+        if (chartConfig === undefined || chartConfig === null || typeof chartConfig !== "object") {
+            chartConfig = {
+                width: width ?? 0,
+                height: height ?? 0,
+            };
+        } else {
+            const candidate = chartConfig as { [key: string]: any };
+            chartConfig = {
+                ...candidate,
+                width: candidate.width ?? width ?? 0,
+                height: candidate.height ?? height ?? 0,
+            };
+        }
 
         const moreProps = {
             xScale,
@@ -418,6 +445,7 @@ export class GenericComponent extends React.Component<GenericComponentProps, Gen
             chartId,
             fullData,
             ...this.moreProps,
+            chartConfig,
         };
 
         return (morePropsDecorator || identity)(moreProps);
